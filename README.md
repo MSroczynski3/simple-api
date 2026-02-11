@@ -29,55 +29,23 @@ npm start
 npm test
 ```
 
-## Endpoints
+## API Documentation
 
-### Health Check
-
-```bash
-curl http://localhost:3000/health
-```
-
-### List All Todos
+Interactive API documentation is available via Swagger UI:
 
 ```bash
-curl http://localhost:3000/todos
+# Start the server
+npm run dev
+
+# Open in your browser
+http://localhost:3000/api-docs
 ```
 
-### Get Todo by ID
-
-```bash
-curl http://localhost:3000/todos/<id>
-```
-
-### Create Todo
-
-```bash
-curl -X POST http://localhost:3000/todos \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Buy groceries", "description": "Milk, eggs, bread"}'
-```
-
-### Full Update (PUT)
-
-```bash
-curl -X PUT http://localhost:3000/todos/<id> \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Buy groceries (updated)", "completed": true}'
-```
-
-### Partial Update (PATCH)
-
-```bash
-curl -X PATCH http://localhost:3000/todos/<id> \
-  -H "Content-Type: application/json" \
-  -d '{"completed": true}'
-```
-
-### Delete Todo
-
-```bash
-curl -X DELETE http://localhost:3000/todos/<id>
-```
+The Swagger UI provides:
+- Complete API reference for all endpoints
+- Request/response schemas
+- Interactive testing of endpoints
+- Example requests and responses
 
 ## Error Responses
 
@@ -91,20 +59,4 @@ All errors follow a consistent shape:
     "details": []
   }
 }
-```
-
-## Project Structure
-
-```
-src/
-  app.ts              - Express app setup
-  server.ts           - Entry point
-  db/database.ts      - SQLite connection and schema init
-  types/index.ts      - TypeScript interfaces
-  validation/          - Zod schemas
-  repository/          - Data access layer
-  middleware/          - requestId, logger, errorHandler
-  routes/              - Route handlers
-tests/
-  todos.test.ts       - Integration tests
 ```

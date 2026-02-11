@@ -14,6 +14,13 @@ app.use(requestId);
 app.use(logger);
 
 // Swagger documentation
+// Expose JSON spec
+app.get("/api-docs/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
+
+// Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(healthRouter);

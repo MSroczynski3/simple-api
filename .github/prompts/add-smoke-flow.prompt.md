@@ -42,7 +42,7 @@ In the **Create Todo** request Script section:
 
 In the **Get Todo by ID** request Script section:
 
-- In the request add a script that verifies `response.id` equals `{{todoId}}` -->
+- In the request add a script that verifies `response.id` equals collection variable `todoId` -->
 
 ## Save
 

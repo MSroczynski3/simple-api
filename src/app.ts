@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import { requestId } from "./middleware/requestId";
 import { logger } from "./middleware/logger";
@@ -9,6 +10,7 @@ import { swaggerSpec } from "./config/swagger";
 
 const app = express();
 
+app.use(helmet());
 app.use(express.json());
 app.use(requestId);
 app.use(logger);

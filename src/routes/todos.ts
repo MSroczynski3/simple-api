@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import * as repo from "../repository/todoRepository";
-import { createTodoSchema, updateTodoSchema, patchTodoSchema } from "../validation/todoSchemas";
-import type { ApiError } from "../types";
+import { createTodoSchema, updateTodoSchema, patchTodoSchema, paginationQuerySchema } from "../validation/todoSchemas";
+import type { ApiError, PaginatedResponse, Todo } from "../types";
 
 const router = Router();
 
@@ -19,19 +19,54 @@ function notFound(res: Response): void {
  *     tags:
  *       - Todos
  *     summary: Get all todos
- *     description: Retrieves a list of all todos
+ *     description: Retrieves a paginated list of todos
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Maximum number of items to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *         description: Number of items to skip
  *     responses:
  *       200:
- *         description: List of todos
+ *         description: Paginated list of todos
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Todo'
+ *               $ref: '#/components/schemas/PaginatedTodoResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
  */
-router.get("/todos", (_req: Request, res: Response) => {
-  res.json(repo.findAll());
+router.get("/todos", (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { limit, offset } = paginationQuerySchema.parse(req.query);
+    const items = repo.findAll(limit, offset);
+    const total = repo.count();
+    
+    const response: PaginatedResponse<Todo> = {
+      items,
+      total,
+      limit,
+      offset,
+    };
+    
+    res.json(response);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /**

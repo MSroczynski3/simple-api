@@ -79,3 +79,62 @@ describe("CRUD lifecycle", () => {
     expect(notFound.body.error.code).toBe("NOT_FOUND");
   });
 });
+
+describe("GET /todos pagination", () => {
+  beforeAll(async () => {
+    // Seed 3 todos for pagination tests
+    await request(app).post("/todos").send({ title: "Todo 1" });
+    await request(app).post("/todos").send({ title: "Todo 2" });
+    await request(app).post("/todos").send({ title: "Todo 3" });
+  });
+
+  it("returns default pagination with all todos", async () => {
+    const res = await request(app).get("/todos");
+    
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("items");
+    expect(res.body).toHaveProperty("total");
+    expect(res.body).toHaveProperty("limit");
+    expect(res.body).toHaveProperty("offset");
+    expect(res.body.limit).toBe(20);
+    expect(res.body.offset).toBe(0);
+    expect(res.body.total).toBeGreaterThanOrEqual(3);
+    expect(Array.isArray(res.body.items)).toBe(true);
+  });
+
+  it("returns paginated results with limit=2 offset=0", async () => {
+    const res = await request(app).get("/todos?limit=2&offset=0");
+    
+    expect(res.status).toBe(200);
+    expect(res.body.items.length).toBe(2);
+    expect(res.body.total).toBeGreaterThanOrEqual(3);
+    expect(res.body.limit).toBe(2);
+    expect(res.body.offset).toBe(0);
+  });
+
+  it("returns paginated results with limit=2 offset=2", async () => {
+    const res = await request(app).get("/todos?limit=2&offset=2");
+    
+    expect(res.status).toBe(200);
+    expect(res.body.items.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.total).toBeGreaterThanOrEqual(3);
+    expect(res.body.limit).toBe(2);
+    expect(res.body.offset).toBe(2);
+  });
+
+  it("validates limit is within bounds", async () => {
+    const maxRes = await request(app).get("/todos?limit=101");
+    expect(maxRes.status).toBe(400);
+    expect(maxRes.body.error.code).toBe("VALIDATION_ERROR");
+
+    const minRes = await request(app).get("/todos?limit=0");
+    expect(minRes.status).toBe(400);
+    expect(minRes.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("validates offset is non-negative", async () => {
+    const res = await request(app).get("/todos?offset=-1");
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
+});

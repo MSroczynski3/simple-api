@@ -5,7 +5,7 @@ description: Import OpenAPI specification to create a new Postman collection wit
 
 # Import OpenAPI Specification to Postman Collection
 
-**Important:** Use the Postman MCP API toolset (`mcp_postman-api-h_*`) for all operations. Follow the workspace configuration and guidelines specified in `.github/instructions/postman-mcp-workspace.instructions.md`.
+**Important:** Use the Postman MCP API toolset (`mcp_postman*`) for all operations. Follow the workspace configuration and guidelines specified in `.github/instructions/postman-mcp-workspace.instructions.md`.
 
 ## Import OpenAPI Specification
 

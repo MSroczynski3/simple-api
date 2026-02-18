@@ -7,6 +7,23 @@ applyTo: '**/*postman*,**/*mcp*' # Auto-load when working with Postman or MCP
 
 This project uses the **Postman MCP Server** for API collection management and testing.
 
+## Agent Usage (Required)
+
+### Use the Postman MCP Server (no curl/CLI)
+
+When interacting with Postman resources, **use the Postman MCP server tools you have access to** (the `mcp_postman_*` tool set).
+
+- Do NOT use `curl`, the Postman CLI, direct HTTP calls, or other non-MCP approaches to manage Postman workspaces/collections/environments.
+- If a prompt is ambiguous, ask for the required IDs rather than “searching around” with extra API calls.
+
+### Review + confirm changes
+
+For any operation that creates, updates, moves, or deletes Postman resources (collections, environments, mocks, monitors, tags, etc.):
+
+- First, summarize the intended change and the target resource IDs.
+- If updating/replacing, retrieve the current resource where reasonable and describe what will change.
+- Wait for explicit user confirmation before executing destructive/irreversible actions.
+
 ## Workspace Configuration
 
 When working with any Postman MCP server operations, you MUST use the following workspace:
@@ -19,12 +36,19 @@ When working with any Postman MCP server operations, you MUST use the following 
 
 ## Rules
 
-1. **Always use the SimpleAPI workspace** for all Postman operations in this project
-2. When calling any `mcp_postman-api-h_*` tools that accept a `workspace` or `workspaceId` parameter, use: `ff0dba12-6d61-43a9-ba84-0388e679bc00`
-3. Do NOT use other workspaces unless explicitly instructed by the user
-4. When creating collections, environments, mocks, or monitors, default to this workspace
+1. **Always use the SimpleAPI workspace** for all Postman operations in this project.
+2. Always pass the workspace ID explicitly to any tool that accepts `workspace` or `workspaceId`: `ff0dba12-6d61-43a9-ba84-0388e679bc00`.
+3. Do NOT use other workspaces unless explicitly instructed by the user.
+4. When creating collections, environments, mocks, or monitors, default to this workspace.
+5. When you already have a resource ID (collection/environment/mock/monitor/spec), pass it directly instead of listing/searching resources.
 
 ## Common Operations
+
+### Prompt header (copy/paste)
+
+Use this at the start of prompts involving Postman changes:
+
+"When interacting with Postman resources, use the Postman MCP server tools (`mcp_postman_*`). Use workspace ID `ff0dba12-6d61-43a9-ba84-0388e679bc00` (SimpleAPI) for all operations. Before creating/updating/deleting anything, summarize the change and wait for my confirmation."
 
 ### Creating Collections
 ```typescript
@@ -35,7 +59,7 @@ workspace: "ff0dba12-6d61-43a9-ba84-0388e679bc00"
 ### Listing Collections
 ```typescript
 // Always filter by workspace
-mcp_postman-api-h_getCollections({
+mcp_postman_getCollections({
   workspace: "ff0dba12-6d61-43a9-ba84-0388e679bc00"
 })
 ```
@@ -43,10 +67,8 @@ mcp_postman-api-h_getCollections({
 ### Creating Environments
 ```typescript
 // Always specify the workspace
-mcp_postman-api-h_createEnvironment({
-  workspace: {
-    id: "ff0dba12-6d61-43a9-ba84-0388e679bc00"
-  }
+mcp_postman_createEnvironment({
+  workspace: "ff0dba12-6d61-43a9-ba84-0388e679bc00"
 })
 ```
 

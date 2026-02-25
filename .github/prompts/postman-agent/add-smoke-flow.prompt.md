@@ -26,7 +26,7 @@ Add a folder named **"Smoke Flow"** to the collection and include the following 
 
 Add a collection variable named `todoId` to store the ID of the created Todo item for use across requests in the smoke flow.
 
-<!-- ## Add Test Scripts
+## Add Test Scripts
 
 ### 1. Status Code Tests
 
@@ -42,7 +42,7 @@ In the **Create Todo** request Script section:
 
 In the **Get Todo by ID** request Script section:
 
-- In the request add a script that verifies `response.id` equals collection variable `todoId` -->
+- In the request add a script that verifies `response.id` equals collection variable `todoId`
 
 ## Save
 

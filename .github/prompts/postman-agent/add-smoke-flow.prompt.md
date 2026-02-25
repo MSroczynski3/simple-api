@@ -5,7 +5,7 @@ description: Add a smoke flow folder with test scripts to an existing Postman co
 
 # Add Smoke Flow to Postman Collection
 
-**Important:** Use the Postman MCP API toolset (`mcp_postman-api-h_*`) for all operations. Follow the workspace configuration and guidelines specified in `.github/instructions/postman-mcp-workspace.instructions.md`.
+**Important:** Use the Postman MCP API toolset (`mcp_postman*`) for all operations. Follow the workspace configuration and guidelines specified in `.github/instructions/postman-mcp-workspace.instructions.md`.
 
 ## Prerequisites
 

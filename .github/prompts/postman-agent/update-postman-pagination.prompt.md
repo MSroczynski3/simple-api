@@ -1,6 +1,6 @@
 ---
 name: update-postman-pagination
-description: Update the existing GET /todos request in a Postman collection after pagination was added without creating duplicate requests.
+description: Update ALL requests and example responses in a Postman collection after pagination was added to list endpoints.
 ---
 
 # Update Postman Collection for Pagination
@@ -11,30 +11,32 @@ description: Update the existing GET /todos request in a Postman collection afte
 
 # Goal
 
-Update the existing `GET /todos` request in the **Todos API - OpenAPI Generated** collection to support pagination.
+Update ALL affected requests and example responses in the **Todos API - OpenAPI Generated** collection to support the new paginated response format.
 
 The update must:
 
-- Add `limit` and `offset` query parameters
-- Update the request description
-- Add an example response with pagination
-- Preserve the existing request without duplicating it
+- Scan the entire collection to identify all affected requests
+- Add `limit` and `offset` query parameters to list endpoints
+- Update request descriptions
+- **Update ALL existing example responses** to use the new format
+- Add new example responses showing paginated format
+- Preserve existing requests without duplicating them
 
 ---
 
 # Inputs / Context
 
-Pagination support was added to the `GET /todos` endpoint.
+Pagination support was added to list endpoints (e.g., `GET /todos`).
 
-The endpoint path **remains unchanged**, but the response format and query parameters have changed.
+The endpoint paths **remain unchanged**, but the response format and query parameters have changed.
 
-## Endpoint
-
-
-GET /todos
+## Affected Endpoint Pattern
 
 
-## Previous Response Format
+GET /todos      (list endpoint - returns paginated response)
+
+
+## Previous Response Format (Array)
 
 
 [
@@ -46,7 +48,7 @@ GET /todos
 ]
 
 
-## New Paginated Response
+## New Paginated Response (Object with items array)
 
 
 {
@@ -75,22 +77,10 @@ Collection:
 Todos API - OpenAPI Generated
 
 
-Existing request:
-
-
-GET /todos
-
-
 Environment variable:
 
 
 {{baseUrl}}
-
-
-Expected request URL:
-
-
-{{baseUrl}}/todos
 
 
 ---
@@ -100,8 +90,9 @@ Expected request URL:
 Before making changes:
 
 1. Confirm the collection **Todos API - OpenAPI Generated** exists.
-2. Confirm the request **GET /todos** exists in the collection.
-3. If the request does not exist, stop and report the issue.
+2. Get the full collection structure to identify ALL requests and folders.
+3. Identify all `GET` requests that return lists (typically endpoints without path parameters like `/todos`).
+4. If no matching requests exist, stop and report the issue.
 
 ---
 
@@ -109,81 +100,101 @@ Before making changes:
 
 Perform the following actions **in order**.
 
-## 1. Locate Existing Request
+## 1. Scan Collection Structure
 
-Find the request named:
+Retrieve the full collection and examine:
+- All folders and their requests
+- All requests across the collection
+- All existing example responses
 
-
-GET /todos
-
-
-inside the collection **Todos API - OpenAPI Generated**.
-
-Do not create a new request.
+Identify every request that:
+- Is a `GET` method
+- Returns a list of resources (URL pattern like `/todos` without `:id`)
 
 ---
 
-## 2. Verify Request URL
+## 2. For Each Affected Request
 
-Ensure the request URL is:
+### 2.1 Verify Request URL
 
-
-{{baseUrl}}/todos
-
+Ensure the request URL follows the expected pattern (e.g., `{{baseUrl}}/todos`).
 
 Do not modify the endpoint path.
 
----
+### 2.2 Add Query Parameters
 
-## 3. Add Query Parameters
-
-Add the following query parameters:
+Add the following query parameters if not already present:
 
 | Parameter | Default | Description |
-|-----------|--------|-------------|
+|-----------|---------|-------------|
 | limit | 20 | Number of items returned |
 | offset | 0 | Starting index of the result set |
 
 These parameters must be visible in the **Params tab**.
 
----
-
-## 4. Update Request Description
+### 2.3 Update Request Description
 
 Update the request description to explain pagination.
 
 Include:
 
-- `limit` — number of items returned
-- `offset` — starting index in the dataset
-- `total` — total number of records available
+- `limit` — number of items to return (default: 20)
+- `offset` — starting index in the dataset (default: 0)
+- `total` — total number of records available (returned in response)
 
 ---
 
-## 5. Add Example Response
+## 3. Update ALL Existing Example Responses
 
-Add a saved example for the following request:
+**Critical:** For each affected request, retrieve ALL existing example responses and update them to use the new paginated format.
 
+### Before (Array format - OUTDATED):
 
+```json
+[
+  { "id": "uuid", "title": "Sample", "completed": false }
+]
+```
+
+### After (Paginated format - CORRECT):
+
+```json
+{
+  "items": [
+    { "id": "uuid", "title": "Sample", "completed": false }
+  ],
+  "total": 1,
+  "limit": 20,
+  "offset": 0
+}
+```
+
+Use `mcp_postman_getCollectionResponse` to retrieve each example, then `mcp_postman_updateCollectionResponse` to update the response body.
+
+---
+
+## 4. Add New Paginated Example (if not exists)
+
+Add a saved example demonstrating pagination:
+
+Request:
+
+```
 GET /todos?limit=2&offset=0
+```
 
+Example response:
 
-Example response structure:
-
-
+```json
 {
-"items": [
-{
-"id": "uuid",
-"title": "Sample",
-"completed": false
+  "items": [
+    { "id": "uuid", "title": "Sample", "completed": false }
+  ],
+  "total": 3,
+  "limit": 2,
+  "offset": 0
 }
-],
-"total": 3,
-"limit": 2,
-"offset": 0
-}
-
+```
 
 ---
 
@@ -191,27 +202,48 @@ Example response structure:
 
 Follow these rules strictly:
 
-- Do **NOT create a new request**
-- Do **NOT rename the request**
+- Do **NOT create new requests** — only update existing ones
+- Do **NOT rename requests**
 - Do **NOT remove existing query parameters**
-- Do **NOT modify unrelated endpoints**
-- Do **NOT change the request path**
-
-Only update the existing request.
+- Do **NOT modify unrelated endpoints** (e.g., POST, PUT, PATCH, DELETE, or GET by ID)
+- Do **NOT change request paths**
+- **DO update ALL existing example responses** — do not leave outdated examples
 
 ---
 
 # Validation
 
-After completing the update, verify:
+After completing all updates, verify for EACH affected request:
 
-1. Exactly **one** request named `GET /todos` exists.
+1. No duplicate requests were created.
 2. Query parameters **limit** and **offset** are present.
 3. The request description explains pagination.
-4. An example response exists showing the **paginated response format**.
+4. **ALL example responses** show the paginated format (object with `items`, `total`, `limit`, `offset`).
+5. No example responses still use the old array format.
+
+## Verification Steps
+
+1. Re-fetch each affected request and confirm `queryParams` contains `limit` and `offset`.
+2. Re-fetch each example response (`responses_order` array) and confirm the response body is a paginated object, not an array.
+3. Report the final status of all updated resources.
+
+---
+
+# Summary Report
+
+After completing all changes, provide a summary:
+
+| Request | Status | Query Params | Examples Updated |
+|---------|--------|--------------|------------------|
+| GET /todos | ✓ Updated | limit, offset | X of Y |
+
+Include:
+- Total requests updated
+- Total example responses updated
+- Any issues encountered
 
 ---
 
 # Save
 
-Save all changes to the current Postman workspace.
+All changes are automatically saved to the Postman workspace via the MCP API.

@@ -1,101 +1,217 @@
 ---
 name: update-postman-pagination
-description: Use after implementing pagination in GET /todos to precisely update the existing Postman collection without duplicating requests.
+description: Update the existing GET /todos request in a Postman collection after pagination was added without creating duplicate requests.
 ---
 
-You are a QA engineer maintaining a Postman collection generated from an OpenAPI spec.
-Your task is to update the existing collection to reflect newly added pagination support in GET /todos.
+# Update Postman Collection for Pagination
 
-Context
--------
+**Important:** Use the Postman MCP API toolset (`mcp_postman*`) for all operations. Follow the workspace configuration and guidelines specified in `.github/instructions/postman-mcp-workspace.instructions.md`.
 
-The backend has changed.
+---
 
-Before (previous response shape):
+# Goal
 
-GET /todos returned:
+Update the existing `GET /todos` request in the **Todos API - OpenAPI Generated** collection to support pagination.
+
+The update must:
+
+- Add `limit` and `offset` query parameters
+- Update the request description
+- Add an example response with pagination
+- Preserve the existing request without duplicating it
+
+---
+
+# Inputs / Context
+
+Pagination support was added to the `GET /todos` endpoint.
+
+The endpoint path **remains unchanged**, but the response format and query parameters have changed.
+
+## Endpoint
+
+
+GET /todos
+
+
+## Previous Response Format
+
 
 [
-  {
-    "id": "uuid",
-    "title": "Sample",
-    "completed": false
-  }
+{
+"id": "uuid",
+"title": "Sample",
+"completed": false
+}
 ]
 
-After (new response shape with pagination):
+
+## New Paginated Response
+
 
 {
-  "items": [
-    {
-      "id": "uuid",
-      "title": "Sample",
-      "completed": false
-    }
-  ],
-  "total": 3,
-  "limit": 20,
-  "offset": 0
+"items": [
+{
+"id": "uuid",
+"title": "Sample",
+"completed": false
+}
+],
+"total": 3,
+"limit": 20,
+"offset": 0
 }
 
-The endpoint path has NOT changed.
-Only response structure and query parameters were added.
 
-Collection Assumptions
-----------------------
+---
 
-- Collection already exists.
-- Request name: "GET /todos"
-- Base URL variable: {{baseUrl}}
-- Environment already configured.
+# Workspace Assumptions
 
-Your Task
----------
+The Postman workspace already contains:
 
-1. Modify Existing Request (DO NOT duplicate it)
+Collection:
 
-Update "GET /todos":
 
-- Ensure URL is:
-  {{baseUrl}}/todos
+Todos API - OpenAPI Generated
 
-- Add query parameters:
-  - limit (default 20)
-  - offset (default 0)
 
-2. Add Example Request
+Existing request:
 
-Add a saved example for:
+
+GET /todos
+
+
+Environment variable:
+
+
+{{baseUrl}}
+
+
+Expected request URL:
+
+
+{{baseUrl}}/todos
+
+
+---
+
+# Pre-Action Check
+
+Before making changes:
+
+1. Confirm the collection **Todos API - OpenAPI Generated** exists.
+2. Confirm the request **GET /todos** exists in the collection.
+3. If the request does not exist, stop and report the issue.
+
+---
+
+# Actions
+
+Perform the following actions **in order**.
+
+## 1. Locate Existing Request
+
+Find the request named:
+
+
+GET /todos
+
+
+inside the collection **Todos API - OpenAPI Generated**.
+
+Do not create a new request.
+
+---
+
+## 2. Verify Request URL
+
+Ensure the request URL is:
+
+
+{{baseUrl}}/todos
+
+
+Do not modify the endpoint path.
+
+---
+
+## 3. Add Query Parameters
+
+Add the following query parameters:
+
+| Parameter | Default | Description |
+|-----------|--------|-------------|
+| limit | 20 | Number of items returned |
+| offset | 0 | Starting index of the result set |
+
+These parameters must be visible in the **Params tab**.
+
+---
+
+## 4. Update Request Description
+
+Update the request description to explain pagination.
+
+Include:
+
+- `limit` — number of items returned
+- `offset` — starting index in the dataset
+- `total` — total number of records available
+
+---
+
+## 5. Add Example Response
+
+Add a saved example for the following request:
+
 
 GET /todos?limit=2&offset=0
 
-Example response:
+
+Example response structure:
+
 
 {
-  "items": [ { ... } ],
-  "total": 3,
-  "limit": 2,
-  "offset": 0
+"items": [
+{
+"id": "uuid",
+"title": "Sample",
+"completed": false
+}
+],
+"total": 3,
+"limit": 2,
+"offset": 0
 }
 
-3. Update Request Description
 
-Add a concise explanation:
+---
 
-- limit controls number of returned items
-- offset controls starting index
-- total represents total number of records in database
+# Constraints
 
-4. Do NOT
+Follow these rules strictly:
 
-- Do NOT create a new request
-- Do NOT rename the request
-- Do NOT remove existing sorting parameters (if present)
-- Do NOT modify unrelated endpoints
+- Do **NOT create a new request**
+- Do **NOT rename the request**
+- Do **NOT remove existing query parameters**
+- Do **NOT modify unrelated endpoints**
+- Do **NOT change the request path**
 
-Verification Step
------------------
+Only update the existing request.
 
-After modifications:
-- Confirm only one GET /todos request exists
-- Confirm query params are visible in Params tab
+---
+
+# Validation
+
+After completing the update, verify:
+
+1. Exactly **one** request named `GET /todos` exists.
+2. Query parameters **limit** and **offset** are present.
+3. The request description explains pagination.
+4. An example response exists showing the **paginated response format**.
+
+---
+
+# Save
+
+Save all changes to the current Postman workspace.

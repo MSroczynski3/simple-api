@@ -14,9 +14,27 @@ function rowToTodo(row: TodoRow): Todo {
   };
 }
 
-export function findAll(): Todo[] {
-  const rows = getDb().prepare("SELECT * FROM todos ORDER BY created_at DESC").all() as TodoRow[];
+export function findAll(limit?: number, offset?: number): Todo[] {
+  let query = "SELECT * FROM todos ORDER BY created_at DESC";
+  const params: number[] = [];
+  
+  if (limit !== undefined) {
+    query += " LIMIT ?";
+    params.push(limit);
+    
+    if (offset !== undefined) {
+      query += " OFFSET ?";
+      params.push(offset);
+    }
+  }
+  
+  const rows = getDb().prepare(query).all(...params) as TodoRow[];
   return rows.map(rowToTodo);
+}
+
+export function count(): number {
+  const result = getDb().prepare("SELECT COUNT(*) as count FROM todos").get() as { count: number };
+  return result.count;
 }
 
 export function findById(id: string): Todo | null {

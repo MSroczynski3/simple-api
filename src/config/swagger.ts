@@ -184,6 +184,37 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+        PaginatedTodoResponse: {
+          type: "object",
+          required: ["items", "total", "limit", "offset"],
+          properties: {
+            items: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Todo",
+              },
+              description: "Array of todo items",
+            },
+            total: {
+              type: "integer",
+              description: "Total number of todos available",
+              example: 42,
+            },
+            limit: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              description: "Maximum number of items returned",
+              example: 20,
+            },
+            offset: {
+              type: "integer",
+              minimum: 0,
+              description: "Number of items skipped",
+              example: 0,
+            },
+          },
+        },
       },
     },
   },

@@ -1,0 +1,3 @@
+As a prompt engineering expert...
+Critically review the effectiveness and clarity of this prompt #file:sync-pagination-from-code.prompt.md .
+Apply needed changes.

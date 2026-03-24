@@ -1,0 +1,1 @@
+Follow the instructions found in #file:sync-pagination-from-code.prompt.md .
